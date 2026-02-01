@@ -17,8 +17,8 @@ jobs:
       - name: Copy compiled node to server
         uses: appleboy/scp-action@v0.1.7
         with:
-          host: "ec2-184-169-185-133.us-west-1.compute.amazonaws.com"
-          username: "ubuntu"
+          host: "ec2-50-18-101-226.us-west-1.compute.amazonaws.com"
+          username: "ec2-user"
           port: 22
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "*"
@@ -27,8 +27,8 @@ jobs:
       - name: Restart server
         uses: appleboy/ssh-action@v0.1.10
         with:
-          host: "ec2-184-169-185-133.us-west-1.compute.amazonaws.com"
-          username: "ubuntu"
+          host: "ec2-50-18-101-226.us-west-1.compute.amazonaws.com"
+          username: "ec2-user"
           port: 22
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
