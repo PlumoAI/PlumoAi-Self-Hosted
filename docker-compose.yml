@@ -1,23 +1,78 @@
+version: "3.9"
+
 services:
-  # Auth Service
-
-  main-app:
-    image: plumoai/plumoai-app:${MAIN_VERSION}
-    restart: unless-stopped
-    # networks:
-    #   - internal
-    ports:
-      - "0.0.0.0:5000:5000"
-
-  auth:
-    image: plumoai/authservice:${AUTH_VERSION}
+  # ------------------- Traefik (Reverse Proxy) -------------------
+  traefik:
+    image: traefik:v3.0
+    container_name: traefik
     restart: always
+    command:
+      - "--api.insecure=false"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.mytlschallenge.acme.tlschallenge=true"
+      - "--certificatesresolvers.mytlschallenge.acme.email=${SSL_EMAIL}"
+      - "--certificatesresolvers.mytlschallenge.acme.storage=/letsencrypt/acme.json"
     ports:
-      - "0.0.0.0:3000:3000"
+      - "80:80"
+      - "443:443"
+    volumes:
+      - traefik_data:/letsencrypt
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
       - internal
 
-  
+  # ------------------- Main App -------------------
+  main-app:
+    image: plumoai/plumoai-app:${MAIN_VERSION}
+    container_name: main-app
+    restart: unless-stopped
+    networks:
+      - internal
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.main.rule=Host(`${DOMAIN_NAME}`)"
+      - "traefik.http.routers.main.entrypoints=websecure"
+      - "traefik.http.routers.main.tls.certresolver=mytlschallenge"
+      - "traefik.http.services.main.loadbalancer.server.port=5000"
+
+  # ------------------- Auth Service -------------------
+  auth:
+    image: plumoai/authservice:${AUTH_VERSION}
+    container_name: auth-service
+    restart: unless-stopped
+    networks:
+      - internal
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.auth.rule=Host(`${DOMAIN_NAME}`) && PathPrefix(`/api/auth`)"
+      - "traefik.http.routers.auth.entrypoints=websecure"
+      - "traefik.http.routers.auth.tls.certresolver=mytlschallenge"
+      - "traefik.http.services.auth.loadbalancer.server.port=3001"
+      - "traefik.http.middlewares.auth-strip.stripprefix.prefixes=/api/auth"
+      - "traefik.http.routers.auth.middlewares=auth-strip"
+
+  # ------------------- Company Service -------------------
+  # company:
+  #   image: plumoai/companyservice:${COMPANY_VERSION}
+  #   container_name: company-service
+  #   restart: unless-stopped
+  #   networks:
+  #     - internal
+  #   labels:
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.company.rule=Host(`${DOMAIN_NAME}`) && PathPrefix(`/api/company`)"
+  #     - "traefik.http.routers.company.entrypoints=websecure"
+  #     - "traefik.http.routers.company.tls.certresolver=mytlschallenge"
+  #     - "traefik.http.services.company.loadbalancer.server.port=3000"
+  #     - "traefik.http.middlewares.company-strip.stripprefix.prefixes=/api/company"
+  #     - "traefik.http.routers.company.middlewares=company-strip"
+
+  # ------------------- MySQL Database -------------------
   mysql:
     image: mysql:8.0
     container_name: plumoai-mysql
@@ -36,15 +91,18 @@ services:
       - mysql_data:/var/lib/mysql
     networks:
       - internal
-# Internal network (not exposed)
+
+# ------------------- Networks -------------------
 networks:
   internal:
     internal: true
 
-# Volumes for persistent storage
+# ------------------- Volumes -------------------
 volumes:
+  traefik_data:
   mysql_data:
 
+# ------------------- Secrets -------------------
 secrets:
   mysql_db:
     file: ./secrets/mysql_db.txt
