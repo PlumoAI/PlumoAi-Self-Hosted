@@ -5,6 +5,8 @@ services:
     restart: always
     ports:
       - "0.0.0.0:3000:3000"
+    networks:
+      - internal
 
   
   mysql:
