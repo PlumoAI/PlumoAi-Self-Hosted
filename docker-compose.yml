@@ -1,5 +1,14 @@
 services:
   # Auth Service
+
+  main-app:
+    image: plumoai/mainapp:${MAIN_VERSION}
+    restart: unless-stopped
+    # networks:
+    #   - internal
+    ports:
+      - "0.0.0.0:5000:5000"
+
   auth:
     image: plumoai/authservice:${AUTH_VERSION}
     restart: always
