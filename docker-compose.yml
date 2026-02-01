@@ -1,0 +1,45 @@
+services:
+  # Auth Service
+  auth:
+    image: plumoai/authservice:${AUTH_VERSION}
+    restart: always
+    ports:
+      - "0.0.0.0:3000:3000"
+    volumes:
+      - auth_data:/data
+
+  
+  mysql:
+    image: mysql:8.0
+    container_name: plumoai-mysql
+    restart: unless-stopped
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_DATABASE_FILE: /run/secrets/mysql_db
+      MYSQL_USER_FILE: /run/secrets/mysql_user
+      MYSQL_PASSWORD_FILE: /run/secrets/mysql_password
+      MYSQL_ROOT_PASSWORD: root_disabled
+    secrets:
+      - mysql_db
+      - mysql_user
+      - mysql_password
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - internal
+# Internal network (not exposed)
+networks:
+  internal:
+    internal: true
+
+# Volumes for persistent storage
+volumes:
+  mysql_data:
+
+secrets:
+  mysql_db:
+    file: ./secrets/mysql_db.txt
+  mysql_user:
+    file: ./secrets/mysql_user.txt
+  mysql_password:
+    file: ./secrets/mysql_password.txt
