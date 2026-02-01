@@ -2,7 +2,7 @@ services:
   # Auth Service
 
   main-app:
-    image: plumoai/mainapp:${MAIN_VERSION}
+    image: plumoai/plumoai-app:${MAIN_VERSION}
     restart: unless-stopped
     # networks:
     #   - internal
