@@ -19,7 +19,16 @@ fi
 
 chmod 600 secrets/*
 
+docker compose down
+docker volume rm plumoai-self-hosted_mysql_data
 echo "🚀 Starting services..."
 docker compose up -d
 
-echo "✅ PlumoAI is running on port 3000"
+# Domain from .env (no static default)
+DOMAIN_NAME=
+[ -f .env ] && DOMAIN_NAME=$(grep -E '^DOMAIN_NAME=' .env | head -1 | cut -d= -f2-)
+if [ -n "$DOMAIN_NAME" ]; then
+  echo "✅ PlumoAI is running at https://${DOMAIN_NAME}"
+else
+  echo "✅ PlumoAI is running (set DOMAIN_NAME in .env for URL)"
+fi
