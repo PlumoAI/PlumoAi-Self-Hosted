@@ -7,7 +7,7 @@ mkdir -p secrets
 
 openssl rand -base64 16 > secrets/mysql_user.txt
 openssl rand -base64 32 > secrets/mysql_password.txt
-openssl rand -base64 12 > secrets/mysql_db.txt
+openssl "authdb_prod" > secrets/mysql_db.txt
 
 chmod 600 secrets/*
 
