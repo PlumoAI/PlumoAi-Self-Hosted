@@ -39,7 +39,7 @@ services:
       - "traefik.http.routers.main.rule=Host(`${DOMAIN_NAME}`)"
       - "traefik.http.routers.main.entrypoints=websecure"
       - "traefik.http.routers.main.tls.certresolver=mytlschallenge"
-      - "traefik.http.services.main.loadbalancer.server.port=5000"
+      - "traefik.http.services.main.loadbalancer.server.port=80"
 
   # Auth API → https://self.plumoai.com/api/auth (priority so path wins over main)
   auth:

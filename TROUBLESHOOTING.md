@@ -21,9 +21,18 @@ chmod +x check-connectivity.sh
 
 ```bash
 docker ps
+docker port traefik
 ```
 
 - `traefik` container must be **Up** and show ports `0.0.0.0:80->80/tcp`, `0.0.0.0:443->443/tcp`.
+- If **No process listening on 80/443** or `docker port traefik` shows nothing: recreate Traefik so it gets port bindings:
+
+```bash
+cd /path/to/plumoai-self-hosted
+docker compose up -d --force-recreate traefik
+```
+
+Then check again: `ss -tlnp | grep -E ':(80|443)'` and `curl -v http://127.0.0.1`.
 - If not running: `docker compose up -d` (from the repo directory with `docker-compose.yml`).
 
 From inside the server, test:
@@ -64,7 +73,16 @@ curl -v --connect-timeout 10 http://self.plumoai.com
 
 ---
 
-## 5. Why curl from inside the server to self.plumoai.com fails
+## 5. Gateway timeout (504) in browser but curl works from server
+
+- **Cause:** Traefik cannot reach the backends (main-app, auth). Often because Traefik was on a different Docker network than main-app/auth.
+- **Fix:** Ensure Traefik is on the same `internal` network as main-app and auth (see `docker-compose.yml`: `traefik` must have `networks: - internal`).
+- Then on the server: `docker compose up -d --force-recreate traefik`.
+- Check: `docker logs traefik` for "backend not found" or connection errors; `docker logs main-app` for app errors.
+
+---
+
+## 6. Why curl from inside the server to self.plumoai.com fails
 
 When you run **on the server**:
 
