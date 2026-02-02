@@ -88,7 +88,9 @@ services:
     image: mysql:8.0
     container_name: plumoai-mysql
     restart: unless-stopped
-    command: --default-authentication-plugin=mysql_native_password
+    command:
+      - --default-authentication-plugin=mysql_native_password
+      - --log-bin-trust-function-creators=1
     environment:
       MYSQL_DATABASE_FILE: /run/secrets/mysql_db
       MYSQL_USER_FILE: /run/secrets/mysql_user
