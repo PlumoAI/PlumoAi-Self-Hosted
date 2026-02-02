@@ -97,6 +97,33 @@ the server resolves `self.plumoai.com` to the **public IP**, so the connection g
 
 ---
 
+## 7. Auth DB init: "SUPER or SYSTEM_VARIABLES_ADMIN privilege(s)"
+
+- **Cause:** The auth service runs `authdb.sql` as the app user (`plumoai_user`). That SQL uses statements that need root (e.g. `SET GLOBAL`, `DEFINER`), so MySQL returns "Access denied; you need (at least one of) the SUPER or SYSTEM_VARIABLES_ADMIN privilege(s)".
+- **Fix:** Load the schema **once** as MySQL root, then restart auth so it sees existing tables and skips (or doesn’t re-run) the init.
+
+**One-time on the server:**
+
+```bash
+cd ~/plumoai-self-hosted
+chmod +x init-auth-db.sh
+./init-auth-db.sh
+docker compose restart auth
+```
+
+Or manually:
+
+```bash
+docker cp auth-service:/app/db_backups/authdb.sql ./
+docker exec -i plumoai-mysql mysql -uroot -proot_disabled authdb_prod < ./authdb.sql
+rm -f ./authdb.sql
+docker compose restart auth
+```
+
+(Use the same root password as in `docker-compose.yml`: `MYSQL_ROOT_PASSWORD`.)
+
+---
+
 ## Quick checklist
 
 | Check | Command / action |
