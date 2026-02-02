@@ -23,8 +23,8 @@ services:
     volumes:
       - traefik_data:/letsencrypt
       - /var/run/docker.sock:/var/run/docker.sock:ro
-    networks:
-      - internal
+    # networks:
+    #   - internal
 
   # Main app → https://self.plumoai.com (DOMAIN_NAME)
   main-app:
