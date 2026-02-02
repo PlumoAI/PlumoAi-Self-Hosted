@@ -31,8 +31,10 @@ services:
     image: plumoai/plumoai-app:${MAIN_VERSION}
     container_name: main-app
     restart: unless-stopped
-    networks:
-      - internal
+    ports:
+      - "0.0.0.0:5000:5000"
+    # networks:
+    #   - internal
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.main.rule=Host(`${DOMAIN_NAME}`)"
