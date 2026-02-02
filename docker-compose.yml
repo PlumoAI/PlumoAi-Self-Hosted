@@ -26,15 +26,13 @@ services:
     networks:
       - internal
 
-  # ------------------- Main App -------------------
+  # Main app → https://self.plumoai.com (DOMAIN_NAME)
   main-app:
     image: plumoai/plumoai-app:${MAIN_VERSION}
     container_name: main-app
     restart: unless-stopped
-    ports:
-      - "0.0.0.0:5000:80"
-    # networks:
-    #   - internal
+    networks:
+      - internal
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.main.rule=Host(`${DOMAIN_NAME}`)"
@@ -42,7 +40,7 @@ services:
       - "traefik.http.routers.main.tls.certresolver=mytlschallenge"
       - "traefik.http.services.main.loadbalancer.server.port=5000"
 
-  # ------------------- Auth Service -------------------
+  # Auth API → https://self.plumoai.com/api/auth (priority so path wins over main)
   auth:
     image: plumoai/authservice:${AUTH_VERSION}
     container_name: auth-service
@@ -54,6 +52,7 @@ services:
       - "traefik.http.routers.auth.rule=Host(`${DOMAIN_NAME}`) && PathPrefix(`/api/auth`)"
       - "traefik.http.routers.auth.entrypoints=websecure"
       - "traefik.http.routers.auth.tls.certresolver=mytlschallenge"
+      - "traefik.http.routers.auth.priority=100"
       - "traefik.http.services.auth.loadbalancer.server.port=3001"
       - "traefik.http.middlewares.auth-strip.stripprefix.prefixes=/api/auth"
       - "traefik.http.routers.auth.middlewares=auth-strip"
