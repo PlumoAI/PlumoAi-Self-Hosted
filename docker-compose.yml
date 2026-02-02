@@ -24,6 +24,7 @@ services:
       - traefik_data:/letsencrypt
       - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
+      - frontend
       - internal
 
   # Main app → https://self.plumoai.com (DOMAIN_NAME)
@@ -94,7 +95,10 @@ services:
       - internal
 
 # ------------------- Networks -------------------
+# frontend: normal network so Traefik gets host port bindings (80, 443)
+# internal: isolated (no outbound); backends + Traefik for backend access
 networks:
+  frontend:
   internal:
     internal: true
 
