@@ -91,6 +91,7 @@ services:
     command:
       - --default-authentication-plugin=mysql_native_password
       - --log-bin-trust-function-creators=1
+      - --lower_case_table_names=1
     environment:
       MYSQL_DATABASE_FILE: /run/secrets/mysql_db
       MYSQL_USER_FILE: /run/secrets/mysql_user
