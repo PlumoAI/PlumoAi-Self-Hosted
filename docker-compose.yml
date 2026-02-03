@@ -69,20 +69,30 @@ services:
       - "traefik.http.routers.auth.middlewares=auth-strip"
 
   # ------------------- Company Service -------------------
-  # company:
-  #   image: plumoai/companyservice:${COMPANY_VERSION}
-  #   container_name: company-service
-  #   restart: unless-stopped
-  #   networks:
-  #     - internal
-  #   labels:
-  #     - "traefik.enable=true"
-  #     - "traefik.http.routers.company.rule=Host(`${DOMAIN_NAME}`) && PathPrefix(`/api/company`)"
-  #     - "traefik.http.routers.company.entrypoints=websecure"
-  #     - "traefik.http.routers.company.tls.certresolver=mytlschallenge"
-  #     - "traefik.http.services.company.loadbalancer.server.port=3000"
-  #     - "traefik.http.middlewares.company-strip.stripprefix.prefixes=/api/company"
-  #     - "traefik.http.routers.company.middlewares=company-strip"
+  company:
+    image: plumoai/api-service:${API_VERSION}
+    container_name: api-service
+    restart: unless-stopped
+    networks:
+      - frontend
+      - internal
+    environment:
+      DB_HOST: ${DB_HOST:-mysql}
+      DB_PORT: ${DB_PORT:-3306}
+    secrets:
+      - mysql_db
+      - mysql_user
+      - mysql_password
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api.rule=Host(`${DOMAIN_NAME}`) && PathPrefix(`/api/company`)"
+      - "traefik.http.routers.api.entrypoints=websecure"
+      - "traefik.http.routers.api.tls.certresolver=mytlschallenge"
+      - "traefik.http.routers.api.priority=100"
+      - "traefik.http.services.api.loadbalancer.server.port=3001"
+      - "traefik.http.middlewares.api-strip.stripprefix.prefixes=/api/company"
+      - "traefik.http.routers.api.middlewares=api-strip"
+
 
   # ------------------- MySQL Database -------------------
   mysql:
