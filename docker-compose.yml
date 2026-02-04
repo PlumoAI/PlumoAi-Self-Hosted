@@ -117,6 +117,22 @@ services:
     networks:
       - internal
 
+  # ------------------- MongoDB (own secrets: mongo_db, mongo_user, mongo_password) -------------------
+  mongodb:
+    image: mongo:7
+    container_name: plumoai-mongodb
+    restart: unless-stopped
+    entrypoint: ["/scripts/mongo-secrets-entrypoint.sh"]
+    volumes:
+      - ./scripts/mongo-secrets-entrypoint.sh:/scripts/mongo-secrets-entrypoint.sh:ro
+      - mongo_data:/data/db
+    secrets:
+      - mongo_db
+      - mongo_user
+      - mongo_password
+    networks:
+      - internal
+
 # ------------------- Networks -------------------
 # frontend: normal network so Traefik gets host port bindings (80, 443)
 # internal: isolated (no outbound); backends + Traefik for backend access
@@ -129,6 +145,7 @@ networks:
 volumes:
   traefik_data:
   mysql_data:
+  mongo_data:
 
 # ------------------- Secrets -------------------
 secrets:
@@ -138,3 +155,9 @@ secrets:
     file: ./secrets/mysql_user.txt
   mysql_password:
     file: ./secrets/mysql_password.txt
+  mongo_db:
+    file: ./secrets/mongo_db.txt
+  mongo_user:
+    file: ./secrets/mongo_user.txt
+  mongo_password:
+    file: ./secrets/mongo_password.txt

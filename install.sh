@@ -17,7 +17,18 @@ else
   echo "  Keeping existing mysql_password.txt (do not overwrite after MySQL is initialized)"
 fi
 
+# MongoDB secrets (separate from MySQL)
+echo -n "plumoai_mongo" > secrets/mongo_db.txt
+echo -n "plumoai_mongo_user" > secrets/mongo_user.txt
+if [ ! -f secrets/mongo_password.txt ]; then
+  openssl rand -base64 32 > secrets/mongo_password.txt
+  echo "  Created new mongo_password.txt"
+else
+  echo "  Keeping existing mongo_password.txt (do not overwrite after MongoDB is initialized)"
+fi
+
 chmod 600 secrets/*
+[ -f scripts/mongo-secrets-entrypoint.sh ] && chmod +x scripts/mongo-secrets-entrypoint.sh
 
 docker compose down
 docker volume rm plumoai-self-hosted_mysql_data
