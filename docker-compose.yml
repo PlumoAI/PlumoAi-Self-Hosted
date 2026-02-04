@@ -79,6 +79,7 @@ services:
       - frontend
       - internal
     environment:
+      PORT: ${PORT:-3001}
       DB_HOST: ${DB_HOST:-mysql}
       DB_PORT: ${DB_PORT:-3306}
       MONGODB_HOST: ${MONGODB_HOST:-mongodb}
