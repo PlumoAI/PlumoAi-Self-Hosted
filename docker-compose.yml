@@ -124,6 +124,7 @@ services:
       - mysql_password
     volumes:
       - mysql_data:/var/lib/mysql
+      - ./init-privileges.sql:/docker-entrypoint-initdb.d/01-init-privileges.sql:ro
     networks:
       - internal
 
