@@ -27,7 +27,7 @@ services:
       - frontend
       - internal
 
-  # Main app → https://self.plumoai.com (DOMAIN_NAME)
+  # Main app → https://self.plumoai.com (DOMAIN_NAME) — low priority so /api/* goes to auth/company
   main-app:
     image: plumoai/plumoai-app:${MAIN_VERSION}
     container_name: main-app
@@ -39,6 +39,7 @@ services:
       - "traefik.http.routers.main.rule=Host(`${DOMAIN_NAME}`)"
       - "traefik.http.routers.main.entrypoints=websecure"
       - "traefik.http.routers.main.tls.certresolver=mytlschallenge"
+      - "traefik.http.routers.main.priority=1"
       - "traefik.http.services.main.loadbalancer.server.port=80"
 
   # Auth API → https://self.plumoai.com/api/auth (priority so path wins over main)
