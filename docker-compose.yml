@@ -117,7 +117,7 @@ services:
       MYSQL_DATABASE_FILE: /run/secrets/mysql_db
       MYSQL_USER_FILE: /run/secrets/mysql_user
       MYSQL_PASSWORD_FILE: /run/secrets/mysql_password
-      MYSQL_ROOT_PASSWORD: root_disabled
+      MYSQL_ROOT_PASSWORD: /run/secrets/mysql_password
     secrets:
       - mysql_db
       - mysql_user
