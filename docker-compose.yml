@@ -84,6 +84,8 @@ services:
       DB_PORT: ${DB_PORT:-3306}
       MONGODB_HOST: ${MONGODB_HOST:-mongodb}
       MONGODB_PORT: ${MONGODB_PORT:-27017}
+      # Internal call to auth (no Traefik, no /api/auth prefix — auth listens on :3000 at /)
+      Auth_URL: ${Auth_URL:-http://auth:3000}
     secrets:
       - mysql_db
       - mysql_user
