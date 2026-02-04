@@ -79,6 +79,8 @@ services:
     environment:
       DB_HOST: ${DB_HOST:-mysql}
       DB_PORT: ${DB_PORT:-3306}
+      MONGODB_HOST: ${MONGODB_HOST:-mongodb}
+      MONGODB_PORT: ${MONGODB_PORT:-27017}
     secrets:
       - mysql_db
       - mysql_user
