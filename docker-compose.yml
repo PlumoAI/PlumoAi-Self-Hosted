@@ -87,6 +87,9 @@ services:
       - mysql_db
       - mysql_user
       - mysql_password
+      - mongo_db
+      - mongo_user
+      - mongo_password
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.api.rule=Host(`${DOMAIN_NAME}`) && PathPrefix(`/api/company`)"
