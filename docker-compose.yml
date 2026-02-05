@@ -103,6 +103,15 @@ services:
       - "traefik.http.middlewares.api-strip.stripprefix.prefixes=/api/company"
       - "traefik.http.routers.api.middlewares=api-strip"
 
+  # ------------------- AI Service (internal only — no exposed URL) -------------------
+  # Other services call it by hostname: http://ai:<port> (e.g. http://ai:3000)
+  ai:
+    image: plumoai/ai-service:${AI_VERSION}
+    container_name: ai-service
+    restart: unless-stopped
+    networks:
+      - internal
+    # No Traefik labels — not exposed to the internet
 
   # ------------------- MySQL Database -------------------
   mysql:
