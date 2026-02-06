@@ -86,6 +86,7 @@ services:
       MONGODB_PORT: ${MONGODB_PORT:-27017}
       # Internal call to auth (no Traefik, no /api/auth prefix — auth listens on :3000 at /)
       Auth_URL: ${Auth_URL:-http://auth:3000}
+      PLUMOAI_DIGITAL_EMPLOYEE_API_URL: ${PLUMOAI_DIGITAL_EMPLOYEE_API_URL:-http://ai:3002}
     secrets:
       - mysql_db
       - mysql_user
@@ -112,6 +113,7 @@ services:
     environment:
       AUTH_URL: ${AUTH_URL:-http://auth:3000}
       COMPANY_URL: ${COMPANY_URL:-http://company:3001}
+      PORT: ${PORT:-3002}
     networks:
       - internal
     # No Traefik labels — not exposed to the internet
