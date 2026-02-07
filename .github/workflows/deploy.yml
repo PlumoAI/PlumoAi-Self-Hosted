@@ -24,6 +24,7 @@ jobs:
           source: "*"
           target: "~/plumoai-self-hosted"
 
+
       - name: Restart server
         uses: appleboy/ssh-action@v0.1.10
         with:
